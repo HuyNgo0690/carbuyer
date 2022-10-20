@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    container_name: backend
+    image: backend
+    restart: unless-stopped
+    env_file: ./backend/app.env
+    volumes:
+      - ./backend/logs:/app/logs
+    depends_on:
+      - postgresdb
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+
+  postgresdb:
+    build:
+      context: db
+      dockerfile: Dockerfile
+    image: postgresdb
+    container_name: postgresdb
+    restart: unless-stopped
+    volumes:
+      - postgresvolume:/var/lib/postgresql/data
+    env_file:
+      - ./database/db.env
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgresvolume:
+    driver: local
