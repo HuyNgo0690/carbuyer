@@ -1,10 +1,18 @@
-import os
+from pydantic import BaseSettings
 
 
-class Config:
-    POSTGRES_USER = os.environ.get('POSTGRES_USER', 'admin')
-    POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', 'password')
-    POSTGRES_DB = os.environ.get('POSTGRES_DB', 'cars')
-    POSTGRES_HOST = os.environ.get('POSTGRES_HOST', 'localhost')
-    POSTGRES_PORT = os.environ.get('POSTGRES_PORT', "5432")
-    APP_PORT = os.environ.get('APP_PORT', "5001")
+class Settings(BaseSettings):
+    POSTGRES_PORT: int
+    POSTGRES_PASSWORD: str
+    POSTGRES_USER: str
+    POSTGRES_DB: str
+    POSTGRES_HOST: str
+    CLIENT_ORIGIN: str
+    APP_PORT: int
+    DEBUG_PORT: int
+
+    class Config:
+        env_file = './app.env'
+
+
+settings = Settings()

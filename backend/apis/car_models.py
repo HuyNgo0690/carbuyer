@@ -1,6 +1,7 @@
 from datetime import datetime
 import uuid
-from .. import schemas, models
+from schemas import schemas
+from models.models import CarModel
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status, APIRouter, Response
 from db.database import get_db
@@ -9,59 +10,54 @@ router = APIRouter()
 
 
 @router.get('/', response_model=schemas.ListCarModelResponse)
-def get_car_models(db: Session = Depends(get_db), limit: int = 10, page: int = 1, search: str = '', user_id: str = Depends(require_user)):
+def get_all_car_models(db: Session = Depends(get_db), limit: int = 10, page: int = 1, search: str = ''):
     skip = (page - 1) * limit
 
-    posts = db.query(models.Post).group_by(models.Post.id).filter(
-        models.Post.title.contains(search)).limit(limit).offset(skip).all()
-    return {'status': 'success', 'results': len(posts), 'posts': posts}
+    car_models = db.query(CarModel).group_by(CarModel.id).filter(CarModel.name.contains(search)).limit(limit).offset(skip).all()
+    return {'status': 'success', 'results': len(car_models), 'car_models': car_models}
 
 
-@router.post('/', status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
-def create_post(post: schemas.CreatePostSchema, db: Session = Depends(get_db), owner_id: str = Depends(require_user)):
-    post.user_id = uuid.UUID(owner_id)
-    new_post = models.Post(**post.dict())
-    db.add(new_post)
+@router.post('/', status_code=status.HTTP_201_CREATED, response_model=schemas.CarModelResponse)
+def create_car_model(car_model: schemas.CreateCarModelSchema, db: Session = Depends(get_db)):
+    new_model = CarModel(**car_model.dict())
+    db.add(new_model)
     db.commit()
-    db.refresh(new_post)
-    return new_post
+    db.refresh(new_model)
+    return new_model
 
 
-@router.put('/{id}', response_model=schemas.PostResponse)
-def update_post(id: str, post: schemas.UpdatePostSchema, db: Session = Depends(get_db), user_id: str = Depends(require_user)):
-    post_query = db.query(models.Post).filter(models.Post.id == id)
-    db_post = post_query.first()
+@router.put('/{id}', response_model=schemas.CarModelResponse)
+def update_car_model(id: str, car_model: schemas.UpdateCarModelSchema, db: Session = Depends(get_db)):
+    car_model_query = db.query(CarModel).filter(CarModel.id == id)
+    result = car_model_query.first()
 
-    if not db_post:
+    if not result:
         raise HTTPException(status_code=status.HTTP_200_OK,
-                            detail=f'No post with this id: {id} found')
-    if db_post.user_id != uuid.UUID(user_id):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail='You are not allowed to perform this action')
-    post.user_id = db_post.user_id
-    post.created_at = db_post.created_at
-    post.updated_at = datetime.utcnow()
-    post_query.update(post.dict(exclude_none=True), synchronize_session=False)
+                            detail=f'No car model with this id: {id} found')
+
+    car_model.created_at = result.created_at
+    car_model.updated_at = datetime.utcnow()
+    car_model_query.update(car_model.dict(exclude_none=True), synchronize_session=False)
     db.commit()
-    return db_post
+    return result
 
 
-@router.get('/{id}', response_model=schemas.PostResponse)
-def get_post(id: str, db: Session = Depends(get_db), user_id: str = Depends(require_user)):
-    post = db.query(models.Post).filter(models.Post.id == id).first()
-    if not post:
+@router.get('/{id}', response_model=schemas.CarModelResponse)
+def get_car_model(id: str, db: Session = Depends(get_db)):
+    car_model = db.query(CarModel).filter(CarModel.id == id).first()
+    if not car_model:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"No post with this id: {id} found")
-    return post
+                            detail=f"No car model with this id: {id} found")
+    return car_model
 
 
 @router.delete('/{id}')
-def delete_post(id: str, db: Session = Depends(get_db), user_id: str = Depends(require_user)):
-    post_query = db.query(models.Post).filter(models.Post.id == id)
-    post = post_query.first()
-    if not post:
+def delete_post(id: str, db: Session = Depends(get_db)):
+    query = db.query(CarModel).filter(CarModel.id == id)
+    result = query.first()
+    if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f'No post with this id: {id} found')
-    post_query.delete(synchronize_session=False)
+                            detail=f'No car model with this id: {id} found')
+    query.delete(synchronize_session=False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

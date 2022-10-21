@@ -19,7 +19,7 @@ services:
 
   postgresdb:
     build:
-      context: db
+      context: database
       dockerfile: Dockerfile
     image: postgresdb
     container_name: postgresdb
