@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     CLIENT_ORIGIN: str
     APP_PORT: int
     DEBUG_PORT: int
+    LOGGING_CONF: str
+    LOGGER: str
 
     class Config:
         env_file = './app.env'

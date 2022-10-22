@@ -5,13 +5,16 @@ from apis import car_models, car_brands
 from config.config import settings
 from db.database import Base, engine
 
+
+
 origins = [
     settings.CLIENT_ORIGIN,
 ]
 
 
-def add_middleware(app):
-    app.add_middleware(
+
+def add_middleware(_app):
+    _app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
         allow_credentials=True,
@@ -20,9 +23,9 @@ def add_middleware(app):
     )
 
 
-def include_app(app):
-    app.include_router(car_models.router, tags=['Car Model'], prefix='/api/model')
-    app.include_router(car_brands.router, tags=['Car Brand'], prefix='/api/brand')
+def include_app(_app):
+    _app.include_router(car_models.router, tags=['Car Model'], prefix='/api/model')
+    _app.include_router(car_brands.router, tags=['Car Brand'], prefix='/api/brand')
 
 
 def create_tables():  # new
@@ -38,8 +41,8 @@ def start_app():
 
 
 if __name__ == '__main__':
-    app = start_app()
+    main = start_app()
     import uvicorn
 
-    # uvicorn.run(app, host="0.0.0.0", port=settings.APP_PORT)
-    uvicorn.run(app, host="0.0.0.0", port=settings.DEBUG_PORT)
+    # uvicorn.run(main, host="0.0.0.0", port=settings.APP_PORT, log_config=log_config)
+    uvicorn.run(main, host="0.0.0.0", port=settings.DEBUG_PORT, log_config=settings.LOGGING_CONF)

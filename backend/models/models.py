@@ -1,10 +1,21 @@
+from typing import List, Dict
+from sqlalchemy import inspect
 from sqlalchemy import TIMESTAMP, Column, ForeignKey, String, text, Integer
 from sqlalchemy.orm import relationship
 
 from db.database import Base
 
 
-class CarModel(Base):
+class Serializer:
+    def serialize(self) -> Dict:
+        return {c: getattr(self, c) for c in inspect(self).attrs.keys()}
+
+    @staticmethod
+    def serialize_list(list_items: List) -> List[Dict]:
+        return [data.serialize() for data in list_items]
+
+
+class CarModel(Serializer, Base):
     __tablename__ = "models"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -17,7 +28,7 @@ class CarModel(Base):
     brand = relationship("CarBrand")
 
 
-class CarBrand(Base):
+class CarBrand(Serializer, Base):
     __tablename__ = "brands"
 
     id = Column(Integer, primary_key=True, index=True)

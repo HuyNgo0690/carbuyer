@@ -39,11 +39,6 @@ class FilteredCarBrandResponse(CarBrandBase):
     name: str
 
 
-class ListCarBrandResponse(BaseModel):
-    results: int
-    brands: List[CarBrandResponse]
-
-
 class CarModelBase(BaseModel):
     brand_id: int
     name: str
@@ -60,6 +55,8 @@ class CreateCarModelSchema(CarModelBase):
 
 class CarModelResponse(CarModelBase):
     id: int
+    name: str
+    logo: str
     brand: FilteredCarBrandResponse
     created_at: datetime
     updated_at: datetime
@@ -74,8 +71,3 @@ class UpdateCarModelSchema(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-class ListCarModelResponse(BaseModel):
-    results: int
-    models: List[CarModelResponse]
