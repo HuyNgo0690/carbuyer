@@ -7,7 +7,6 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_DB: str
     POSTGRES_HOST: str
-    CLIENT_ORIGIN: str
     APP_PORT: int
     DEBUG_PORT: int
     LOGGING_CONF: str

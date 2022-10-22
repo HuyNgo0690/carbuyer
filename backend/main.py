@@ -6,17 +6,9 @@ from config.config import settings
 from db.database import Base, engine
 
 
-
-origins = [
-    settings.CLIENT_ORIGIN,
-]
-
-
-
 def add_middleware(_app):
     _app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -44,5 +36,5 @@ if __name__ == '__main__':
     main = start_app()
     import uvicorn
 
-    # uvicorn.run(main, host="0.0.0.0", port=settings.APP_PORT, log_config=log_config)
-    uvicorn.run(main, host="0.0.0.0", port=settings.DEBUG_PORT, log_config=settings.LOGGING_CONF)
+    uvicorn.run(main, host="0.0.0.0", port=settings.APP_PORT, log_config=settings.LOGGING_CONF)
+    # uvicorn.run(main, host="0.0.0.0", port=settings.DEBUG_PORT, log_config=settings.LOGGING_CONF)
