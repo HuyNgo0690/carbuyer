@@ -42,9 +42,9 @@ def update_car_brand(id: str, car_brand: schemas.UpdateCarBrandSchema, db: Sessi
         if not result:
             raise HTTPException(status_code=status.HTTP_200_OK,
                                 detail=f'No car brand with this id: {id} found')
-
-        car_brand.updated_at = datetime.utcnow()
-        query.update(car_brand.dict(exclude_none=True), synchronize_session=False)
+        car_brand = car_brand.dict(exclude_unset=True)
+        car_brand.update(dict(updated_at=datetime.utcnow()))
+        result.set_data(car_brand)
         db.commit()
         return result
     except SQLAlchemyError as e:

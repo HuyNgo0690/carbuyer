@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, List, Optional
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class CarBrandBase(BaseModel):
     name: str
     logo: str
-    description: Union[str, None] = None
+    description: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -17,10 +17,10 @@ class CreateCarBrandSchema(CarBrandBase):
 
 
 class UpdateCarBrandSchema(BaseModel):
-    name: str
-    logo: str
-    description: str
-    updated_at: datetime
+    name: Optional[str] = None
+    logo: Optional[str] = None
+    description: Optional[str] = None
+    updated_at: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -43,7 +43,7 @@ class CarModelBase(BaseModel):
     brand_id: int
     name: str
     logo: str
-    description: Union[str, None] = None
+    description: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -63,11 +63,11 @@ class CarModelResponse(CarModelBase):
 
 
 class UpdateCarModelSchema(BaseModel):
-    name: str
-    logo: str
-    description: str
-    brand_id: int
-    updated_at: Union[datetime, None] = None
+    name: Optional[str] = None
+    logo: Optional[str] = None
+    description: Optional[str] = None
+    brand_id: Optional[str] = None
+    updated_at: Optional[str] = None
 
     class Config:
         orm_mode = True

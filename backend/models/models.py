@@ -7,6 +7,12 @@ from db.database import Base
 
 
 class Serializer:
+
+    def set_data(self, data: dict):
+        for key, value in data.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
     def serialize(self) -> Dict:
         return {c: getattr(self, c) for c in inspect(self).attrs.keys()}
 
